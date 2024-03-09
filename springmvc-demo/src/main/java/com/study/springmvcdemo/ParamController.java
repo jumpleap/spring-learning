@@ -3,6 +3,9 @@ package com.study.springmvcdemo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -98,5 +101,30 @@ public class ParamController {
         // 文件上传到指定路径
         fileName.transferTo(new File("D:/" + file));
         return "接收到的文件为: " + file;
+    }
+
+    // 获取Cookie(传统方法)
+    // SpringMVC 是基于Servlet API构建的原始Web框架, 也是在Servlet的基础上实现的, 即SpringMVC对这两个对象进行了封装
+    // HttpServletRequest, HttpServletResponse: 是Servlet 提供的两个类, 是SpringMVC中的内置对象, 需要时直接添加声明即可
+    // HttpServletRequest 对象代表客户端的请求, 当客户端通过HTTP协议访问服务器时, HTTP请求头中的所有信息都封装在这个对象中
+    // 通过 HttpServletRequest 对象提供的方法, 可以获得客户端请求的所有信息
+    // HttpServletResponse 对象代表服务器的响应, HTTP响应的信息都在这个对象中, 比如向客户端发送的数据, 响应头, 状态码等,
+    // 提供 HttpServletResponse 对象提供的方法, 可以获得服务器响应的所有内容
+    @RequestMapping("/m10")
+    public String getCookie(HttpServletRequest request, HttpServletResponse response) {
+        // 获取所有 cookie 信息
+        Cookie[] cookies = request.getCookies();
+        // 打印 cookie 信息
+        StringBuilder builder = new StringBuilder();
+        // cookies判空
+        if (cookies != null) {
+            // 循环cookies数组
+            for (Cookie cookie : cookies) {
+                // 把cookies中的所有cookie的名称和值都添加到builder中
+                builder.append(cookie.getName()).append(": ").append(cookie.getValue());
+            }
+        }
+        // 打印出cookie的信息
+        return "Cookie信息: "+ builder.toString();
     }
 }
