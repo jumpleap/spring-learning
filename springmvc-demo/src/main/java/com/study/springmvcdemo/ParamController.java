@@ -127,4 +127,11 @@ public class ParamController {
         // 打印出cookie的信息
         return "Cookie信息: "+ builder.toString();
     }
+
+    // 获取Cookie(简洁方法)
+    // 使用 CookieValue 获取 cookie的值
+    @RequestMapping("/cookie")
+    public String cookie(@CookieValue("bite") String bite) {
+        return "bite: " + bite;
+    }
 }
