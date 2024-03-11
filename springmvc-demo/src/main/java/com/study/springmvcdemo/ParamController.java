@@ -3,14 +3,14 @@ package com.study.springmvcdemo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+
+// 请求
 @RequestMapping("/param")
 @RestController
 public class ParamController {
@@ -133,5 +133,72 @@ public class ParamController {
     @RequestMapping("/cookie")
     public String cookie(@CookieValue("bite") String bite) {
         return "bite: " + bite;
+    }
+
+    // 获取Session(传统方法)
+    // Session 是服务器端的机制, 我们需要先存储, 才能再获取
+    // Session 是基于 HttpServletRequest 来存储和获取的
+
+    // Session的存储
+    // void setAttribute(String name, Object value): 使用指定名称绑定一个对象到session会话
+    @RequestMapping("/setSess")
+    public String setSess(HttpServletRequest request) {
+        // 获取Session对象
+        HttpSession session = request.getSession();
+        if (session != null) {
+            // 把username绑定到会话中的java这个对象上
+            session.setAttribute("username", "java");
+        }
+        return "session 存储成功!";
+    }
+
+    // 获取Session的方式
+    // 1) HttpSession getSession(boolean create); -> 参数若为true, 则当不存在会话时新建会话; 参数若为false, 则当不存在会话时返回null
+    // 2) HttpSession getSession(); -> 和getSession(true)含义一样, 默认值为true
+    // Session的获取(法一)
+    @RequestMapping("/getSess")
+    public String getSess(HttpServletRequest request) {
+        // 获取Session, 不存在则自动创建; 若不想自当创建, 则在getSession()中设置为false
+        HttpSession session = request.getSession();
+        // HttpSession session = request.getSession(false);
+        String username = null;
+
+        // 当session不为空且session中username 不为空
+        if (session != null && session.getAttribute("username") != null) {
+            // 把session会话中username对象的值强转为String后赋给username
+            username = (String)session.getAttribute("username");
+        }
+        return "username: " + username;
+    }
+
+    // 获取Session(简洁法一)
+    // 使用@SessionAttribute注解获取Session中目标对象的值
+    @RequestMapping("/getSess2")
+    public String getSess2(@SessionAttribute(value = "username", required = false) String username) {
+        return "username: " + username;
+    }
+
+    // 获取Session(简洁法二)
+    // 使用SpringMVC内置对象HttpSession获取
+    @RequestMapping("/getSess3")
+    public String getSess3(HttpSession session) {
+        // 使用getAttribute方法来获取session, 需要强转为String
+        String  username = (String)session.getAttribute("username");
+        return "username: " + username;
+    }
+
+    // 获取Header(传统方式)
+    @RequestMapping("/getHeader")
+    public String getHeader(HttpServletRequest request, HttpServletResponse response) {
+        // getHeader中的参数对应HTTP请求报头的key
+        String header = request.getHeader("User-Agent");
+        return "User-Agent: " + header;
+    }
+
+    // 获取Header(简洁方式)
+    // @RequestHeader中的值对应的也是HTTP请求报头中的key
+    @RequestMapping("/getHeader2")
+    public String getHeader2(@RequestHeader("User-Agent") String userAgent) {
+        return "userAgent: " + userAgent;
     }
 }
