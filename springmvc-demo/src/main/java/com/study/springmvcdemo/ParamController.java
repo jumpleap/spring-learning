@@ -201,4 +201,19 @@ public class ParamController {
     public String getHeader2(@RequestHeader("User-Agent") String userAgent) {
         return "userAgent: " + userAgent;
     }
+
+    /*
+      总结:
+        a. @RequestMapping: 路由映射
+        b. @RequestParam: 后端参数重命名
+        c. @RequestBody: 接收JSON类型的参数
+        d. @PathVariable: 接收路径参数
+        e. @RequestPart: 上传⽂件
+        f. @ResponseBody: 返回数据
+        g. @CookieValue: 从Cookie中获取值
+        h. @SessionAttribute: 从Session中获取值
+        i. @RequestHeader: 从Header中获取值
+        j. @Controller: 定义⼀个控制器, Spring框架启动时加载, 把这个对象交给Spring管理. 默认返回视图.
+        k. @RestController: @ResponseBody + @Controller返回数据
+     */
 }
