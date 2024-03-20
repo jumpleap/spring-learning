@@ -1,4 +1,4 @@
-package com.study;
+package com.study.springmvcdemo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
