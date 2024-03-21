@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: config-file
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/java109?characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123456
+
+# yml配置不同类型的值
+# 字符串
+string:
+  value: hello
+
+# 布尔值
+boolean:
+  value: true
+  value1: false
+
+# 整数
+int:
+  value: 10
+
+# 浮点数
+float:
+  value: 3.123
+
+# Null, ~表示null
+null:
+  value: ~
+
+# ""空串
+empty:
+  value: ''
