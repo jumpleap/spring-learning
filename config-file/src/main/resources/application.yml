@@ -9,7 +9,12 @@ spring:
 # yml配置不同类型的值
 # 字符串
 string:
-  value: hello
+  value: "哈哈哈"
+  str1: hello \n spring boot.
+  # 和str1一样的意思
+  str2: 'hello \n spring boot.'
+  # \n 表示换行
+  str3: "hello \n spring boot."
 
 # 布尔值
 boolean:
@@ -25,9 +30,43 @@ float:
   value: 3.123
 
 # Null, ~表示null
-null:
-  value: ~
+#null.value: ~
 
 # ""空串
 empty:
   value: ''
+
+# yml配置对象
+student:
+  id: 1
+  name: zhangsan
+  age: 18
+
+# yml配置集合
+list:
+  name:
+    - List
+    - Linked
+    - Array
+
+# 配置map
+maptypes:
+  map:
+    k1: 123
+    k2: 234
+    k3: 345
+
+# 验证码案例
+kaptcha:
+  text-producer:
+    character:
+      length: 4
+    font:
+      color: blue
+  items:
+    # admin captcha
+    admin:
+      path: /admin/captcha
+      session:
+        key: KAPTCHA_SESSION_KEY
+        date: KAPTCHA_SESSION_DATE
