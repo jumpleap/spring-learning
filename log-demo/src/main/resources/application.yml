@@ -1,0 +1,19 @@
+logging:
+#  日志级别
+  level:
+    root: info
+  file:
+    #  配置日志文件名
+    name: logger/spring-boot.log
+#    配置日志文件的目录
+#    path: D:/temp
+  logback:
+    rollingpolicy:
+#      日志文件最大空间占用
+      max-file-size: 1KB
+#      分割后的日志文件名为: 日志吗.日期.索引
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i
+#  自定义日志
+#  pattern:
+#    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} %c %M %L [%thread] %m%n'
+#    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} %c %M %L [%thread] %m%n'
