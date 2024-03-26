@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- <mapper>标签: 需要指定namespace属性, 表示命名空间, 值未mapper接口的全限定类名, 包括全包名.类名 -->
+<mapper namespace="com.example.mybatis.mapper.UserInfoXmlMapper">
+    <!-- <select>标签: 对数据库的查询操作, id: 是和接口中定义的方法名相同, 表示具体的实现方法, resultType: 返回的数据类型 -->
+    <select id="queryByUser" resultType = "com.example.mybatis.model.UserInfo">
+        select username, `password`, age, gender, phone from user_info;
+    </select>
+
+    <!--  添加操作  -->
+    <insert id="insert">
+        insert into user_info(username, `password`, age, gender, phone) values
+            (#{username}, #{password}, #{age}, #{gender}, #{phone});
+    </insert>
+
+    <!--  添加操作: 对重命名后名称进行添加, 使用对象名.属性添加  -->
+    <insert id="insert2">
+        insert into user_info(username, `password`, age, gender, phone) values
+            (#{userInfo.username}, #{userInfo.password}, #{userInfo.age}, #{userInfo.gender}, #{userInfo.phone});
+    </insert>
+
+    <!--  添加操作: 返回自增id, 和注解雷同  -->
+    <insert id="insert3" useGeneratedKeys="true" keyProperty="id">
+        insert into user_info(username, `password`, age, gender, phone) values
+            (#{username}, #{password}, #{age}, #{gender}, #{phone});
+    </insert>
+
+    <!-- 删除操作   -->
+    <delete id="delete">
+        delete from user_info where id = #{id};
+    </delete>
+
+    <update id="update">
+        update user_info set username = #{name} where id = #{id};
+    </update>
+
+    <select id="queryByUser2">
+        select `id`, username, password, age, gender, phone,
+               delete_flag, create_time, update_time from user_info;
+    </select>
+
+    <!-- 命名映射: 结果映射, 起别名和驼峰和注解相同   -->
+    <!--  id: 起别名, type: 映射的实体类  -->
+    <resultMap id="BaseMap" type="com.example.mybatis.model.UserInfo">
+        <!--  id: 主键, result: 普通字段, column: 数据库字段名, property: java对象属性名      -->
+        <id column="id" property="id"></id>
+        <result column="delete_flag" property="deleteFlag"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+    <select id="queryByUser3" resultMap="BaseMap">
+        select `id`, username, password, age, gender, phone,
+               delete_flag, create_time, update_time from user_info;
+    </select>
+
+</mapper>

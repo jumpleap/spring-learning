@@ -1,0 +1,15 @@
+spring:
+  application:
+    name=mybatis-demo
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/mybatis_test?characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  configuration: # 配置打印 MyBatis⽇志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    map-underscore-to-camel-case: true #配置驼峰⾃动转换
+  # 配置 mybatis xml 的⽂件路径，在 resources/mapper 创建所有表的 xml ⽂件
+  mapper-locations: classpath:mapper/**Mapper.xml
