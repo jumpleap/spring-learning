@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- <mapper>标签: 需要指定namespace属性, 表示命名空间, 值未mapper接口的全限定类名, 包括全包名.类名 -->
+<!-- <mapper>标签: 需要指定namespace属性, 表示命名空间, 值为mapper接口的全限定类名, 包括全包名.类名 -->
 <mapper namespace="com.example.mybatis.mapper.UserInfoXmlMapper">
     <!-- <select>标签: 对数据库的查询操作, id: 是和接口中定义的方法名相同, 表示具体的实现方法, resultType: 返回的数据类型 -->
     <select id="queryByUser" resultType = "com.example.mybatis.model.UserInfo">
