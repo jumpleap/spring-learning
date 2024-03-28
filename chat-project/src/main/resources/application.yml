@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/chat_project?characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  configuration: # ???? MyBatis??
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true #????????
+  #   ?? mybatis xml ??????? resources/mapper ?????? xml ??
+  mapper-locations: classpath:mapper/**Mapper.xml
+#logging:
+#  pattern:
+#    console: "[%-5level] - %msg%n"
