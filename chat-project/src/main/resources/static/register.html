@@ -48,13 +48,13 @@
             // 2. 发送 ajax 请求
             $.ajax({
                 type: 'post',
-                url: '/user/register',
+                url: '/register',
                 data: {
                     username: username,
                     password: password
                 },
                 success: function(body) {
-                    if (body && body.id > 0) {
+                    if (body && body.userId > 0) {
                         alert('注册成功!');
                         location.assign('/login.html');
                     } else {

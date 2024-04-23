@@ -2,58 +2,63 @@ package com.project.chat.controller;
 
 import com.project.chat.mapper.UserMapper;
 import com.project.chat.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-@RequestMapping("/user")
 @RestController
 public class UserController {
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
     // 登录
     @PostMapping("/login")
-    public Object login(String username, String password, HttpServletRequest request) {
-        // 从数据库中查询是否有这个用户
-        User user = userMapper.login(username);
-
-        // 若用户不存在或输入的密码为空, 返回新的对象, 对象中的属性都为空
+    @ResponseBody
+    public Object login(String username, String password, HttpServletRequest req) {
+        // 1. 先去数据库中查询, 看username能否找到对应的user对象
+        //    如果能找到, 则查看一下密码是否匹配
+        User user = userMapper.selectByName(username);
         if (user == null || !user.getPassword().equals(password)) {
-            System.out.println("登录失败, 账号或密码错误!");
+            // 两条件具备一个, 就登录失败, 同时返回一个空的对象即可
+            System.out.println("登录失败! 用户名或密码错误!" + user);
             return new User();
         }
 
-        // 如果用户名和密码都匹配, 登录成功, 就创建会话.
-        HttpSession session = request.getSession(true);
+        // 2.如果都匹配, 登录成功! 创建会话
+        HttpSession session = req.getSession(true);
         session.setAttribute("user", user);
-
-        // 不保留密码显示
+        // 在返回前, 把password给隐藏, 防止返回隐私数据
         user.setPassword("");
         return user;
     }
 
     // 注册
     @PostMapping("/register")
+    @ResponseBody
     public Object register(String username, String password) {
         User user = null;
         try {
+            // 创建对象
             user = new User();
+            // 赋值
             user.setUsername(username);
             user.setPassword(password);
-            int ret = userMapper.register(user);
-            System.out.println("注册: " + ret);
+            // 把对象记录插入到数据库中
+            int ret = userMapper.insert(user);
+            System.out.println("注册 ret:" + ret);
+            // 防止隐私泄露
             user.setPassword("");
         } catch (DuplicateKeyException e) {
-            // 捕获了这个异常, 则说明名字重复了, 注册失败(username是unique的)
-            // 返回空对象
+            // 如果 insert 方法抛出上述异常, 说明名字重复了, 注册失败
             user = new User();
+            System.out.println("注册失败! username = " + username);
         }
-        return  user;
+        return user;
     }
 }

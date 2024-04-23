@@ -6,10 +6,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis:
-  configuration: # ???? MyBatis??
+  configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true #????????
-  #   ?? mybatis xml ??????? resources/mapper ?????? xml ??
+    map-underscore-to-camel-case: true
   mapper-locations: classpath:mapper/**Mapper.xml
 #logging:
 #  pattern:

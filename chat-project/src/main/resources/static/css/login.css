@@ -34,13 +34,14 @@
     /* span 是行内元素, 直接设置 width 无效, 需要设置成块级元素 */
     display: block;
     width: 100px;
+    height: 25px;
 
     font-weight: 700;
 }
 
 #username, #password {
     width: 200px;
-    height: 40px;
+    height: 33px;
     font-size: 20px;
     text-indent: 10px;
 
