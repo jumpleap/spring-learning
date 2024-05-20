@@ -3,10 +3,7 @@ package com.project.chat.controller;
 import com.project.chat.mapper.UserMapper;
 import com.project.chat.model.User;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +56,27 @@ public class UserController {
             user = new User();
             System.out.println("注册失败! username = " + username);
         }
+        return user;
+    }
+
+    @GetMapping("/userInfo")
+    @ResponseBody
+    public Object getUserInfo(HttpServletRequest req) {
+        // 1.先从请求中获取到会话
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            // 会话不存在, 用户尚未登录, 此时返回一个空的对象即可
+            System.out.println("[getUserInfo] 当前获取不到 session 对象!");
+            return new User();
+        }
+        // 从会话中获取到之前保存的对象
+        User user = (User)session.getAttribute("user");
+
+        if (user == null) {
+            System.out.println("[getUserInfo] 当前获取不到 user 对象!");
+            return new User();
+        }
+        user.setPassword("");
         return user;
     }
 }
