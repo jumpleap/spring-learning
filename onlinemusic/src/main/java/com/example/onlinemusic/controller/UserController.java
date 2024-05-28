@@ -28,11 +28,14 @@ public class UserController {
         userLogin.setUsername(username);
         userLogin.setPassword(password);
 
+        // 根据用户名和密码去数据库中查找相同的用户
         User user = userMapper.login(userLogin);
+        // 不存在
         if (user == null) {
             System.out.println("登录失败!");
             return new ResponseBodyMessage<>(-1, "登录失败！", userLogin);
         } else {
+            // 匹配成功
             System.out.println("登录成功！");
             // 封装session
             // request.getSession().setAttribute("USERINFO_SESSION_KEY", user);
@@ -50,14 +53,18 @@ public class UserController {
 
         User user = userMapper.selectByName(username);
 
+        // 没有找到用户名对应的用户
         if (user == null) {
             System.out.println("登录失败!");
             return new ResponseBodyMessage<>(-1, "用户名或者密码错误！", user);
         } else {
+            // 加密后的密码和给定的密码进行校验
             boolean flg = bCryptPasswordEncoder.matches(password, user.getPassword());
             if (!flg) {
+                // 密码不匹配
                 return new ResponseBodyMessage<>(-1, "用户名或者密码错误！", user);
             }
+            // 密码正常， 封装session
             request.getSession().setAttribute(Constant.USERINFO_SESSION_KEY, user);
             return new ResponseBodyMessage<>(0, "登录成功！", user);
         }
