@@ -7,6 +7,7 @@ import com.example.onlinemusic.tools.Constant;
 import com.example.onlinemusic.tools.ResponseBodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -53,7 +55,7 @@ public class MusicController {
         // 根据歌曲名和歌手判断是不是同一首歌
         Music music = musicMapper.selectByMusic(title, singer);
         // 是同一首
-        if(music != null) {
+        if (music != null) {
             return new ResponseBodyMessage<>(-1, "该歌曲已经存在!", false);
         }
 
@@ -69,12 +71,13 @@ public class MusicController {
         // 根据地址创建一个文件对象
         File dest = new File(path);
 
-        // 不存在则创建目录
+        // 判断这个文件对象对应的文件是否存在
         if (!dest.exists()) {
+            // 不存在则创建
             dest.mkdir();
         }
 
-        // 把文件上传到dest目录中
+        // 把文件上传到dest文件对象中
         try {
             file.transferTo(dest);
             // return new ResponseBodyMessage<>(0, "上传成功！", true);
@@ -85,7 +88,7 @@ public class MusicController {
         // return new ResponseBodyMessage<>(-1, "上传失败！", false);
 
         // 进行数据库的上传
-        // 先获取数据, id是自增长的
+        // 先获取数据, id是自增长的，无需获取
         // int index = fileName.lastIndexOf(".");
         // String title = fileName.substring(0, index);
 
@@ -117,5 +120,35 @@ public class MusicController {
             dest.delete();
             return new ResponseBodyMessage<>(-1, "数据库上传失败！", false);
         }
+    }
+
+    // 播放音乐的路径: /music/get?path=xxx.mp3
+    @RequestMapping("/get")
+    public ResponseEntity<byte[]> get(String path) {
+        /*byte[] a = {68, 69, 70, 71};
+        // 500 -- 内部服务器错误
+        // return ResponseEntity.internalServerError().build();
+        // 404 -- 找不到
+        // return ResponseEntity.notFound().build();
+        // ok有两个方法： 无参 -> 返回状态码  有参 -> 返回状态码和body内容【响应体】
+        return ResponseEntity.ok(a);*/
+
+        // 获取文件
+        File file = new File(SAVE_PATH + "/" + path);
+        // 用于把文件转为字节保存
+        byte[] a = null;
+        try {
+            // 把文件转为字节数组保存
+            a = Files.readAllBytes(file.toPath());
+            // 没有转化成功
+            if (a == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            // 转化成功
+            return ResponseEntity.ok(a);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.badRequest().build();
     }
 }
