@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RequestMapping("/music")
 @RestController
@@ -150,5 +151,112 @@ public class MusicController {
             e.printStackTrace();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+
+    @RequestMapping("/delete")
+    public ResponseBodyMessage<Boolean> deleteMusicById(@RequestParam String id) {
+        //判断用户是否登录
+        //TODO:
+
+        // 字符串转为整数
+        int musicId = Integer.parseInt(id);
+        // 判断id对应的音乐是否存在
+        Music music = musicMapper.findMusicById(musicId);
+        // 不存在
+        if (music == null) {
+            return new ResponseBodyMessage<>(-1, "找不到该音乐！", false);
+        }
+
+        // 存在的情况下， 删除数据库中的音乐和服务器中的音乐
+        // 删除数据库中的音乐
+        int ret = musicMapper.deleteMusicById(musicId);
+        // 删除失败
+        if (ret != 1) {
+            return new ResponseBodyMessage<>(-1, "删除数据库中的音乐失败！", false);
+        }
+
+        // 数据库中删除成功，进而删除服务器中的音乐
+        // 获取文件名
+        int index = music.getUrl().lastIndexOf("=");
+        String fileName = music.getUrl().substring(index + 1);
+        // 上述两行代码也可以一行搞定
+        // String title = music.getTitle();
+
+        // 获取文件地址
+        File file = new File(SAVE_PATH + "/" + fileName + ".mp3");
+        // 打印日志
+        System.out.println("当前文件的路径：" + file.getPath());
+
+        // 删除路径对应的服务器文件
+        if (file.delete()) {
+            return new ResponseBodyMessage<>(0, "服务器音乐删除成功！", true);
+        }
+        return new ResponseBodyMessage<>(-1, "服务器音乐删除失败！", false);
+    }
+
+
+    // 批量删除音乐
+    @RequestMapping("/deleteList")
+    public ResponseBodyMessage<Boolean> deleteListMusic(@RequestParam("id[]") List<Integer> id) {
+        // 用户是否登录
+        // TODO:
+
+        System.out.println("id[]: " + id);
+        // 计数器，最后用于判断所有音乐是否删除成功
+        int count = 0;
+        // 判断这些音乐是否存在
+        for (int musicId : id) {
+            // 查找id对应的音乐
+            Music music = musicMapper.findMusicById(musicId);
+            // 不存在
+            if (music == null) {
+                return new ResponseBodyMessage<>(-1, "该音乐不存在！", false);
+            }
+
+            // 存在，删除数据库中的音乐
+            int ret = musicMapper.deleteMusicById(musicId);
+            // 删除失败
+            if (ret != 1) {
+                return new ResponseBodyMessage<>(-1, "数据库音乐删除成功！", false);
+            }
+
+            // 删除成功，进一步删除服务器中的音乐
+            // 获取文件名
+            String fileName = music.getTitle();
+            // 获取文件的路径
+            File file = new File(SAVE_PATH + "/" + fileName + ".mp3");
+
+            // 删除成功
+            if (file.delete()) {
+                count++;
+            } else {
+                // 删除失败
+                return new ResponseBodyMessage<>(-1, "删除服务器音乐失败！", false);
+            }
+        }
+
+        // 所有的id的音乐都删除成功
+        if (count == id.size()) {
+            System.out.println("批量删除成功！");
+            return new ResponseBodyMessage<>(-1, "批量删除成功！", false);
+        } else {
+            System.out.println("批量删除失败！");
+            return new ResponseBodyMessage<>(-1, "批量删除失败！", false);
+        }
+    }
+
+
+    @RequestMapping("/findmusic")
+    public ResponseBodyMessage<List<Music>> findMusic(@RequestParam(required = false) String musicName) {
+        List<Music> list = null;
+        // 为空，返回所有音乐
+        if (musicName == null) {
+            list = musicMapper.findMusic();
+        } else {
+            // 不为空，则返回指定名称的印业
+            list = musicMapper.findMusicByName(musicName);
+        }
+        return new ResponseBodyMessage<>(0, "找到了所查询的音乐！", list);
     }
 }

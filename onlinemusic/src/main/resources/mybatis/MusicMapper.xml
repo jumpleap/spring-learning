@@ -10,4 +10,20 @@
     <select id="selectByMusic" resultType="com.example.onlinemusic.model.Music">
         select * from music where title = #{title} and singer = #{singer};
     </select>
+
+    <select id="findMusicById" resultType="com.example.onlinemusic.model.Music">
+        select * from music where id = #{id};
+    </select>
+
+    <delete id="deleteMusicById" parameterType="java.lang.Integer">
+        delete from music where id = #{musicId};
+    </delete>
+
+    <select id="findMusic" resultType="com.example.onlinemusic.model.Music">
+        select * from music;
+    </select>
+
+    <select id="findMusicByName" resultType="com.example.onlinemusic.model.Music">
+        select * from music where title like concat('%',#{musicName},'%');
+    </select>
 </mapper>
