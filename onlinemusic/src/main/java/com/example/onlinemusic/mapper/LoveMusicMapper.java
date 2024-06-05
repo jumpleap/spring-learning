@@ -19,4 +19,10 @@ public interface LoveMusicMapper {
 
     // 根据音乐名查询当前用户下是否有收藏音乐
     List<Music> findLoveMusicByName(String musicName, int userId);
+
+    // 删除收藏的音乐
+    int deleteLoveMusic(int userId, int musicId);
+
+    // 根据音乐的id进行删除
+    int deleteLoveMusicById(int musicId);
 }

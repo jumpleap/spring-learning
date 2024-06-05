@@ -1,5 +1,6 @@
 package com.example.onlinemusic.controller;
 
+import com.example.onlinemusic.mapper.LoveMusicMapper;
 import com.example.onlinemusic.mapper.MusicMapper;
 import com.example.onlinemusic.model.Music;
 import com.example.onlinemusic.model.User;
@@ -32,6 +33,9 @@ public class MusicController {
 
     @Autowired
     private MusicMapper musicMapper;
+
+    @Autowired
+    private LoveMusicMapper loveMusicMapper;
 
     @RequestMapping("/upload")
     public ResponseBodyMessage<Boolean> insertMusic(@RequestParam String singer,
@@ -190,6 +194,8 @@ public class MusicController {
 
         // 删除路径对应的服务器文件
         if (file.delete()) {
+            // 同时删除收藏表中的音乐
+            loveMusicMapper.deleteLoveMusicById(musicId);
             return new ResponseBodyMessage<>(0, "服务器音乐删除成功！", true);
         }
         return new ResponseBodyMessage<>(-1, "服务器音乐删除失败！", false);
@@ -229,6 +235,8 @@ public class MusicController {
 
             // 删除成功
             if (file.delete()) {
+                // 同时删除收藏表中的音乐
+                loveMusicMapper.deleteLoveMusicById(musicId);
                 count++;
             } else {
                 // 删除失败
