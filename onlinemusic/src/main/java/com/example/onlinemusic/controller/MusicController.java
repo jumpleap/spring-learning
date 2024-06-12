@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,8 @@ public class MusicController {
     @RequestMapping("/upload")
     public ResponseBodyMessage<Boolean> insertMusic(@RequestParam String singer,
                                                     @RequestParam("filename") MultipartFile file,
-                                                    HttpServletRequest request) {
+                                                    HttpServletRequest request,
+                                                    HttpServletResponse response) {
         // 检测是否登录
         HttpSession httpSession = request.getSession(false);
         // session为空 或 session中的属性不存在
@@ -116,6 +118,7 @@ public class MusicController {
             // 判断是否上传成功
             if (ret == 1) {
                 // 此处上传成功应该跳转音乐列表页
+                response.sendRedirect("/list.html");
                 return new ResponseBodyMessage<>(0, "数据库上传成功！", true);
             }
             return new ResponseBodyMessage<>(-1, "数据库上传失败！", false);
@@ -203,7 +206,7 @@ public class MusicController {
 
 
     // 批量删除音乐
-    @RequestMapping("/deleteList")
+    @RequestMapping("/delete-list")
     public ResponseBodyMessage<Boolean> deleteListMusic(@RequestParam("id[]") List<Integer> id) {
         // 用户是否登录
         // TODO:
@@ -224,7 +227,7 @@ public class MusicController {
             int ret = musicMapper.deleteMusicById(musicId);
             // 删除失败
             if (ret != 1) {
-                return new ResponseBodyMessage<>(-1, "数据库音乐删除成功！", false);
+                return new ResponseBodyMessage<>(-1, "数据库音乐删除失败！", false);
             }
 
             // 删除成功，进一步删除服务器中的音乐
@@ -247,7 +250,7 @@ public class MusicController {
         // 所有的id的音乐都删除成功
         if (count == id.size()) {
             System.out.println("批量删除成功！");
-            return new ResponseBodyMessage<>(-1, "批量删除成功！", false);
+            return new ResponseBodyMessage<>(0, "批量删除成功！", true);
         } else {
             System.out.println("批量删除失败！");
             return new ResponseBodyMessage<>(-1, "批量删除失败！", false);
@@ -255,7 +258,7 @@ public class MusicController {
     }
 
 
-    @RequestMapping("/findmusic")
+    @RequestMapping("/find-music")
     public ResponseBodyMessage<List<Music>> findMusic(@RequestParam(required = false) String musicName) {
         List<Music> list = null;
         // 为空，返回所有音乐
