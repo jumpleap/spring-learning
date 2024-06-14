@@ -16,7 +16,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         HttpSession httpSession = request.getSession(false);
         // session为空 或 session中的属性不存在
         if (httpSession == null || httpSession.getAttribute(Constant.USERINFO_SESSION_KEY) == null) {
-            System.out.println("未登录，请进行登录！");
+            // System.out.println("未登录，请进行登录！");
             return false;
         }
         return true;
