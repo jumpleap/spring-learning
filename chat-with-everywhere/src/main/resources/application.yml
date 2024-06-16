@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: chat-with-everywhere
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/java_chatroom?characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123456
+#    加。cj对应mysql8版本，5版本不需要.cj
+    driver-class-name: com.mysql.jdbc.Driver
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/**Mapper.xml
+
+logging:
+  pattern:
+    console: "[%-5level] - %msg%n"

@@ -30,6 +30,9 @@ public class UserAPI {
         // 创建会话，会话不存在则创建
         HttpSession session = req.getSession(true);
         session.setAttribute("user", user);
+
+        // 防止返回密码，返回密码之前置空
+        user.setPassword("");
         return user;
     }
 
@@ -41,11 +44,15 @@ public class UserAPI {
             user.setUsername(username);
             user.setPassword(password);
             int ret = userMapper.insert(user);
-            System.out.println("注册：ret" + ret);
+            System.out.println("注册：ret = " + ret);
+            // 把密码屏蔽
+            user.setPassword("");
         } catch (DuplicateKeyException e) {
             // 上述操作出现异常，说明用户名出现了重复，返回空的对象
+            System.out.println("注册失败！username：" + username);
             return new User();
         }
+        System.out.println("注册成功！ user = " + user);
         return user;
     }
 }
