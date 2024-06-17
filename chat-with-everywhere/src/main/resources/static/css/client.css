@@ -137,3 +137,46 @@
     background-size: 30px 30px;
     background-position: center center;
 }
+
+.main .left .list {
+    height: 297px;
+
+    /* 如果里面的内容太多了, 就自动提供一个滚动条 */
+    overflow: auto;
+}
+
+.main .left .list li {
+    height: 56px;
+    padding: 10px 20px;
+    color: white;
+    border-top: 1px solid black;
+}
+
+.main .left .list .selected {
+    background-color: rgb(46, 54, 65);
+}
+
+/* 这个样式是给会话列表使用的 */
+.main .left .list li h3,
+.main .left .list li p {
+    height: 18px;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+/* 这个样式是给好友列表使用的 */
+.main .left .list li h4 {
+    height: 36px;
+    line-height: 36px;
+    font-size: 18px;
+}
+
+/* 应用了这个 css 类的元素就会被自动隐藏 */
+.hide {
+    display: none;
+}
+
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+    display: none;
+}
