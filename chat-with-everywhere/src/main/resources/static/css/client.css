@@ -1,0 +1,139 @@
+/* 这个文件来放置主界面中的样式 */
+
+.client-container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main {
+    width: 720px;
+    height: 450px;
+    background-color: rgb(238, 238, 238);
+    border-radius: 5px;
+
+    display: flex;
+
+    z-index: 2;
+}
+
+.main .left {
+    width: 200px;
+    height: 100%;
+    background-color: rgb(46, 50, 56);
+
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.main .right {
+    width: 520px;
+    height: 100%;
+
+    padding: 0 20px;
+}
+
+.cover {
+    width: 100%;
+    height: 100%;
+
+    background-image: url(../img/cat.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+
+    /* 为了让 .cover 和 .main 能够重叠, 给 .cover 加上个定位属性 */
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    /* 设置了下 z 轴坐标 */
+    z-index: 1;
+
+    /* 使用 css 滤镜效果, 让背景图变的朦胧起来 */
+    filter: blur(70px);
+}
+
+.main .left .user {
+    height: 80px;
+    font-size: 20px;
+    line-height: 80px;
+    color: white;
+    padding: 0 18px;
+}
+
+.main .left .search {
+    height: 28px;
+    padding: 0 15px;
+
+    /* 使用弹性布局, 让里面的元素, 水平方向排列 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main .left .search input {
+    height: 28px;
+    width: 120px;
+    line-height: 28px;
+    font-size: 14px;
+    color: white;
+    background-color: rgb(38, 41, 46);
+
+    /* 去除边框和轮廓线 */
+    border: none;
+    outline: none;
+    /* 输入框里的文字和左侧边界有个边距 */
+    padding-left: 6px;
+
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.main .left .search button {
+    height: 28px;
+    width: 34px;
+    border: none;
+    outline: none;
+
+    background-color: rgb(38, 41, 46);
+
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-image: url(../img/搜索.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+
+.main .left .search button:active {
+    background-color: grey;
+}
+
+.main .left .tab {
+    height: 45px;
+    display: flex;
+    align-items: center;
+}
+
+.main .left .tab .tab-session {
+    height: 100%;
+    width: 50%;
+
+    background-image: url(../img/对话.png);
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-position: center center;
+}
+
+
+.main .left .tab .tab-friend {
+    height: 100%;
+    width: 50%;
+
+    background-image: url(../img/用户2.png);
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-position: center center;
+}
