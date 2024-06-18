@@ -9,7 +9,7 @@
 
 .main {
     width: 720px;
-    height: 450px;
+    height: 500px;
     background-color: rgb(238, 238, 238);
     border-radius: 5px;
 
@@ -139,7 +139,7 @@
 }
 
 .main .left .list {
-    height: 297px;
+    height: 347px;
 
     /* 如果里面的内容太多了, 就自动提供一个滚动条 */
     overflow: auto;
@@ -179,4 +179,98 @@
 /* 隐藏滚动条 */
 ::-webkit-scrollbar {
     display: none;
+}
+
+.main .right .title {
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+}
+
+.main .right .message-show {
+    height: 345px;
+
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+
+    /* 内容太多, 自动进行滚动 */
+    overflow: auto;
+}
+
+.main .right .message-show .message {
+    margin-top: 8px;
+    /* 宽度默认 100%, 高度的话不显式设定, 后续一条消息的内容有多有少 */
+    display: flex;
+}
+
+/* 这个样式让子元素靠左 */
+.main .right .message-show .message-left {
+    justify-content: flex-start;
+}
+
+/* 这个样式让子元素靠右 */
+.main .right .message-show .message-right {
+    justify-content: flex-end;
+}
+
+.main .right .message-show .message .box {
+    /* box 凸显出左右这样的效果, 宽度不能是 100% */
+    width: 350px;
+}
+
+.main .right .message-show .message .box h4 {
+    /* 去掉加粗效果 */
+    font-weight: normal;
+    height: 20px;
+    line-height: 20px;
+    font-size: 16px;
+}
+
+.main .right .message-show .message .box p {
+    padding: 12px;
+    border-radius: 10px;
+}
+
+/* 给左侧右侧消息设置背景色 */
+.main .right .message-show .message-left .box p {
+    background-color: #fff;
+}
+
+.main .right .message-show .message-right .box p {
+    background-color: rgb(123, 181, 107);
+}
+
+.main .right .message-input {
+    /* 先把 textarea 转成块级元素, 方便设置尺寸啥的 */
+    display: block;
+    width: 100%;
+    height: 75px;
+    border: none;
+    outline: none;
+
+    margin-top: 3px;
+    background-color: rgb(238, 238, 238);
+    padding: 10px;
+    resize: none;
+}
+
+.main .right .ctrl {
+    height: 35px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.main .right .ctrl button {
+    height: 35px;
+    width: 100px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.main .right .ctrl button:active {
+    background-color: grey;
+    color: white;
 }

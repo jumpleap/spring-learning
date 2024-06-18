@@ -20,7 +20,7 @@
         <div class="left">
             <!-- 当前登录用户的用户名 -->
             <div class="user">
-                zhangsan
+
             </div>
             <!-- 这是搜索框 -->
             <div class="search">
@@ -87,11 +87,35 @@
         </div>
         <!-- 右侧区域, 显示聊天编辑框 -->
         <div class="right">
-
+            <!-- 会话标题 -->
+            <div class="title">lisi</div>
+            <!-- 消息区 -->
+            <div class="message-show">
+                <div class="message message-left">
+                    <div class="box">
+                        <h4>lisi</h4>
+                        <p>今天吃啥</p>
+                    </div>
+                </div>
+                <div class="message message-right">
+                    <div class="box">
+                        <h4>zhangsan</h4>
+                        <p>随便</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 消息编辑框 -->
+            <textarea class="message-input"></textarea>
+            <!-- 发送按钮 -->
+            <div class="ctrl">
+                <button>发送</button>
+            </div>
         </div>
-    </div>
+</div>
 </div>
 
+<!-- 引入 jquery, 注意, 这个引入操作要在使用之前! 否则会找不到相关函数的定义 -->
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 <script src="js/client.js"></script>
 
 </body>

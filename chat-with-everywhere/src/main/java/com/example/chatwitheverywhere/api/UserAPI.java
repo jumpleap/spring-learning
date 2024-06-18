@@ -3,6 +3,7 @@ package com.example.chatwitheverywhere.api;
 import com.example.chatwitheverywhere.model.User;
 import com.example.chatwitheverywhere.model.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,6 +54,28 @@ public class UserAPI {
             return new User();
         }
         System.out.println("注册成功！ user = " + user);
+        return user;
+    }
+
+    @GetMapping("/userInfo")
+    public Object getUserInfo(HttpServletRequest req) {
+        // 从请求中获取会话
+        HttpSession session = req.getSession(false);
+        // 会话不存在，用户尚未登录，此时返回一个空对象即可
+        if (session == null) {
+            System.out.println("[getUserInfo] 当前获取不到 session对象！");
+            return new User();
+        }
+
+        // 从session中获取之前保留的用户对象
+        User user = (User) session.getAttribute("user");
+        // 用户不存在
+        if (user == null) {
+            System.out.println("[getUserInfo] 当前获取不到 session对象！");
+            return new User();
+        }
+        // 获取到了用户对象
+        user.setPassword("");
         return user;
     }
 }
