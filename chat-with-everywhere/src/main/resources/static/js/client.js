@@ -96,3 +96,128 @@ function getFriendList() {
 }
 
 getFriendList();
+
+function getSessionList() {
+    $.ajax({
+        type: 'get',
+        url: 'sessionList',
+        success: function(body) {
+            // 1. 清空之前的会话列表
+            let sessionListUL = document.querySelector('#session-list');
+            sessionListUL.innerHTML = '';
+            // 2. 遍历响应的数组, 针对结果来构造页面
+            for (let session of body) {
+                // 针对 lastMessage 的长度进行截断处理
+                if (session.lastMessage.length > 10) {
+                    session.lastMessage = session.lastMessage.substring(0, 10) + '...';
+                }
+
+                let li = document.createElement('li');
+                // 把会话 id 保存到 li 标签的自定义属性中.
+                li.setAttribute('message-session-id', session.sessionId);
+                li.innerHTML = '<h3>' + session.friends[0].friendName + '</h3>'
+                    + '<p>' + session.lastMessage + '</p>';
+                sessionListUL.appendChild(li);
+
+                // 给 li 标签新增点击事件
+                li.onclick = function() {
+                    // 这个写法, 就能保证, 点击哪个 li 标签
+                    // 此处对应的 clickSession 函数的参数就能拿到哪个 li 标签.
+                    clickSession(li);
+                }
+            }
+        }
+    });
+}
+
+getSessionList();
+
+function clickSession(currentLi) {
+    // 1. 设置高亮
+    let allLis = document.querySelectorAll('#session-list>li');
+    activeSession(allLis, currentLi);
+    // 2. 获取指定会话的历史消息 TODO
+    let sessionId = currentLi.getAttribute("message-session-id");
+    getHistoryMessage(sessionId);
+}
+
+function activeSession(allLis, currentLi) {
+    // 这里的循环遍历, 更主要的目的是取消未被选中的 li 标签的 className
+    for (let li of allLis) {
+        if (li == currentLi) {
+            li.className = 'selected';
+        } else {
+            li.className = '';
+        }
+    }
+}
+
+// 这个函数负责获取指定会话的历史消息.
+function getHistoryMessage(sessionId) {
+}
+
+// 点击好友列表项, 触发的函数
+function clickFriend(friend) {
+    // 1. 先判定一下当前这个好友是否有对应的会话.
+    //    使用一个单独的函数来实现. 这个函数参数是用户的名字. 返回值是一个 li 标签. 找到了就是返回了对应会话列表里的 li; 如果没找到, 返回 null
+    let sessionLi = findSessionByName(friend.friendName);
+    let sessionListUL = document.querySelector('#session-list');
+    if (sessionLi) {
+        // 2. 如果存在匹配的结果, 就把这个会话设置成选中状态, 获取历史消息, 并且置顶.
+        //    insertBefore 把这个找到的 li 标签放到最前面去.
+        sessionListUL.insertBefore(sessionLi, sessionListUL.children[0]);
+        //    此处设置会话选中状态, 获取历史消息, 这俩功能其实在上面的 clickSession 中已经有了.
+        //    此处直接调用 clickSession 即可
+        //    clickSession(sessionLi);
+        //    或者还可以模拟一下点击操作.
+        sessionLi.click();
+    } else {
+        // 3. 如果不存在匹配的结果, 就创建个新会话(创建 li 标签 + 通知服务器)
+        sessionLi = document.createElement('li');
+        //    构造 li 标签内容. 由于新会话没有 "最后一条消息", p 标签内容就设为空即可
+        sessionLi.innerHTML = '<h3>' + friend.friendName + '</h3>' + '<p></p>';
+        //    把标签进行置顶
+        sessionListUL.insertBefore(sessionLi, sessionListUL.children[0]);
+        sessionLi.onclick = function() {
+            clickSession(sessionLi);
+        }
+        sessionLi.click();
+        //     发送消息给服务器, 告诉服务器当前新创建的会话是啥样的.
+        createSession(friend.friendId, sessionLi);
+    }
+    // 4. 还需要把标签页给切换到 会话列表.
+    //    实现方式很容易, 只要找到会话列表标签页按钮, 模拟一个点击操作即可.
+    let tabSession = document.querySelector('.tab .tab-session');
+    tabSession.click();
+}
+
+
+function findSessionByName(username) {
+    // 先获取到会话列表中所有的 li 标签
+    // 然后依次遍历, 看看这些 li 标签谁的名字和要查找的名字一致.
+    let sessionLis = document.querySelectorAll('#session-list>li');
+    for (let sessionLi of sessionLis) {
+        // 获取到该 li 标签里的 h3 标签, 进一步得到名字
+        let h3 = sessionLi.querySelector('h3');
+        if (h3.innerHTML == username) {
+            return sessionLi;
+        }
+    }
+    return null;
+}
+
+
+// friendId 是构造 HTTP 请求时必备的信息
+function createSession(friendId, sessionLi) {
+    $.ajax({
+        type: 'post',
+        url: 'session?toUserId=' + friendId,
+        success: function(body) {
+            console.log("会话创建成功! sessionId = " + body.sessionId);
+            sessionLi.setAttribute('message-session-id', body.sessionId);
+        },
+        error: function() {
+            console.log('会话创建失败!');
+        }
+    });
+}
