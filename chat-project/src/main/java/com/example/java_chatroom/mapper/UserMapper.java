@@ -1,6 +1,6 @@
-package com.project.chat.mapper;
+package com.example.java_chatroom.mapper;
 
-import com.project.chat.model.User;
+import com.example.java_chatroom.model.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

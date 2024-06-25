@@ -37,6 +37,133 @@ function initSwitchTab() {
 initSwitchTab();
 
 /////////////////////////////////////////////////////
+// 操作 websocket
+/////////////////////////////////////////////////////
+
+// 创建 websocket 实例
+// let websocket = new WebSocket("ws://127.0.0.1:8080/WebSocketMessage");
+let websocket = new WebSocket("ws://" + location.host + "/WebSocketMessage");
+
+websocket.onopen = function() {
+    console.log("websocket 连接成功!");
+}
+
+websocket.onmessage = function(e) {
+    console.log("websocket 收到消息! " + e.data);
+    // 此时收到的 e.data 是个 json 字符串, 需要转成 js 对象
+    let resp = JSON.parse(e.data);
+    if (resp.type == 'message') {
+        // 处理消息响应
+        handleMessage(resp);
+    } else {
+        // resp 的 type 出错!
+        console.log("resp.type 不符合要求!");
+    }
+}
+
+websocket.onclose = function() {
+    console.log("websocket 连接关闭!");
+}
+
+websocket.onerror = function() {
+    console.log("websocket 连接异常!");
+}
+
+function handleMessage(resp) {
+    // 把客户端收到的消息, 给展示出来.
+    // 展示到对应的会话预览区域, 以及右侧消息列表中.
+
+    // 1. 根据响应中的 sessionId 获取到当前会话对应的 li 标签.
+    //    如果 li 标签不存在, 则创建一个新的
+    let curSessionLi = findSessionLi(resp.sessionId);
+    if (curSessionLi == null) {
+        // 就需要创建出一个新的 li 标签, 表示新会话.
+        curSessionLi = document.createElement('li');
+        curSessionLi.setAttribute('message-session-id', resp.sessionId);
+        // 此处 p 标签内部应该放消息的预览内容. 一会后面统一完成, 这里先置空
+        curSessionLi.innerHTML = '<h3>' + resp.fromName + '</h3>'
+            + '<p></p>';
+        // 给这个 li 标签也加上点击事件的处理
+        curSessionLi.onclick = function() {
+            clickSession(curSessionLi);
+        }
+    }
+    // 2. 把新的消息, 显示到会话的预览区域 (li 标签里的 p 标签中)
+    //    如果消息太长, 就需要进行截断.
+    let p = curSessionLi.querySelector('p');
+    p.innerHTML = resp.content;
+    if (p.innerHTML.length > 10) {
+        p.innerHTML = p.innerHTML.substring(0, 10) + '...';
+    }
+    // 3. 把收到消息的会话, 给放到会话列表最上面.
+    let sessionListUL = document.querySelector('#session-list');
+    sessionListUL.insertBefore(curSessionLi, sessionListUL.children[0]);
+    // 4. 如果当前收到消息的会话处于被选中状态, 则把当前的消息给放到右侧消息列表中.
+    //    新增消息的同时, 注意调整滚动条的位置, 保证新消息虽然在底部, 但是能够被用户直接看到.
+    if (curSessionLi.className == 'selected') {
+        // 把消息列表添加一个新消息.
+        let messageShowDiv = document.querySelector('.right .message-show');
+        addMessage(messageShowDiv, resp);
+        scrollBottom(messageShowDiv);
+    }
+    // 其他操作, 还可以在会话窗口上给个提示 (红色的数字, 有几条消息未读), 还可以播放个提示音.
+    // 这些操作都是纯前端的. 实现也不难, 不是咱们的重点工作. 暂时不做了.
+}
+
+function findSessionLi(targetSessionId) {
+    // 获取到所有的会话列表中的 li 标签
+    let sessionLis = document.querySelectorAll('#session-list li');
+    for (let li of sessionLis) {
+        let sessionId = li.getAttribute('message-session-id');
+        if (sessionId == targetSessionId) {
+            return li;
+        }
+    }
+    // 啥时候会触发这个操作, 就比如如果当前新的用户直接给当前用户发送消息, 此时没存在现成的 li 标签
+    return null;
+}
+
+/////////////////////////////////////////////////////
+// 实现消息发送/接收逻辑
+/////////////////////////////////////////////////////
+
+function initSendButton() {
+    // 1. 获取到发送按钮 和 消息输入框
+    let sendButton = document.querySelector('.right .ctrl button');
+    let messageInput = document.querySelector('.right .message-input');
+    // 2. 给发送按钮注册一个点击事件
+    sendButton.onclick = function() {
+        // a) 先针对输入框的内容做个简单判定. 比如输入框内容为空, 则啥都不干
+        if (!messageInput.value) {
+            // value 的值是 null 或者 '' 都会触发这个条件
+            return;
+        }
+        // b) 获取当前选中的 li 标签的 sessionId
+        let selectedLi = document.querySelector('#session-list .selected');
+        if (selectedLi == null) {
+            // 当前没有 li 标签被选中.
+            return;
+        }
+        let sessionId = selectedLi.getAttribute('message-session-id');
+        // c) 构造 json 数据
+        let req = {
+            type: 'message',
+            sessionId: sessionId,
+            content: messageInput.value
+        };
+        req = JSON.stringify(req);
+        console.log("[websocket] send: " + req);
+        // d) 通过 websocket 发送消息
+        websocket.send(req);
+        // e) 发送完成之后, 清空之前的输入框
+        messageInput.value = '';
+    }
+}
+
+initSendButton();
+
+
+/////////////////////////////////////////////////////
 // 从服务器获取到用户登录数据
 /////////////////////////////////////////////////////
 
@@ -63,7 +190,6 @@ function getUserInfo() {
 }
 
 getUserInfo();
-
 
 function getFriendList() {
     $.ajax({
@@ -154,6 +280,64 @@ function activeSession(allLis, currentLi) {
 
 // 这个函数负责获取指定会话的历史消息.
 function getHistoryMessage(sessionId) {
+    console.log("获取历史消息 sessionId=" + sessionId);
+    // 1. 先清空右侧列表中的已有内容
+    let titleDiv = document.querySelector('.right .title');
+    titleDiv.innerHTML = '';
+    let messageShowDiv = document.querySelector('.right .message-show');
+    messageShowDiv.innerHTML = '';
+
+    // 2. 重新设置会话的标题. 新的会话标题是点击的那个会话上面显示的标题
+    //    先找到当前选中的会话是哪个. 被选中的会话带有 selected 类的.
+    let selectedH3 = document.querySelector('#session-list .selected>h3');
+    if (selectedH3) {
+        // selectedH3 可能不存在的. 比如页面加载阶段, 可能并没有哪个会话被选中.
+        // 也就没有会话带有 selected 标签. 此时就无法查询出这个 selectedH3
+        titleDiv.innerHTML = selectedH3.innerHTML;
+    }
+    // 3. 发送 ajax 请求给服务器, 获取到该会话的历史消息.
+    $.ajax({
+        type: 'get',
+        url: 'message?sessionId=' + sessionId,
+        success: function(body) {
+            // 此处返回的 body 是个 js 对象数组, 里面的每个元素都是一条消息.
+            // 直接遍历即可.
+            for (let message of body) {
+                addMessage(messageShowDiv, message);
+            }
+            // 加个操作: 在构造好消息列表之后, 控制滚动条, 自动滚动到最下方.
+            scrollBottom(messageShowDiv);
+        }
+    });
+}
+
+function addMessage(messageShowDiv, message) {
+    // 使用这个 div 表示一条消息
+    let messageDiv = document.createElement('div');
+    // 此处需要针对当前消息是不是用户自己发的, 决定是靠左还是靠右.
+    let selfUsername = document.querySelector('.left .user').innerHTML;
+    if (selfUsername == message.fromName) {
+        // 消息是自己发的. 靠右
+        messageDiv.className = 'message message-right';
+    } else {
+        // 消息是别人发的. 靠左
+        messageDiv.className = 'message message-left';
+    }
+    messageDiv.innerHTML = '<div class="box">'
+        + '<h4>' + message.fromName + '</h4>'
+        + '<p>' + message.content + '</p>'
+        + '</div>';
+    messageShowDiv.appendChild(messageDiv);
+}
+
+// 把 messageShowDiv 里的内容滚动到底部.
+function scrollBottom(elem) {
+    // 1. 获取到可视区域的高度
+    let clientHeight = elem.offsetHeight;
+    // 2. 获取到内容的总高度
+    let scrollHeight = elem.scrollHeight;
+    // 3. 进行滚动操作, 第一个参数是水平方向滚动的尺寸. 第二个参数是垂直方向滚动的尺寸
+    elem.scrollTo(0, scrollHeight - clientHeight);
 }
 
 // 点击好友列表项, 触发的函数
@@ -191,7 +375,6 @@ function clickFriend(friend) {
     tabSession.click();
 }
 
-
 function findSessionByName(username) {
     // 先获取到会话列表中所有的 li 标签
     // 然后依次遍历, 看看这些 li 标签谁的名字和要查找的名字一致.
@@ -205,7 +388,6 @@ function findSessionByName(username) {
     }
     return null;
 }
-
 
 // friendId 是构造 HTTP 请求时必备的信息
 function createSession(friendId, sessionLi) {

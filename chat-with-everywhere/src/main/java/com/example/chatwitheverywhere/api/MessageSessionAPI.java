@@ -18,6 +18,8 @@ import java.util.List;
 public class MessageSessionAPI {
     @Resource
     private MessageSessionMapper messageSessionMapper;
+    @Resource
+    private MessageMapper messageMapper;
 
     @GetMapping("/sessionList")
     public Object getMessageSessionList(HttpServletRequest req) {
@@ -45,7 +47,15 @@ public class MessageSessionAPI {
             List<Friend> friends = messageSessionMapper.getFriendsBySessionId(sessionId, user.getUserId());
             messageSession.setFriends(friends);
             // 4.遍历会话id，查询出每个会话id的最后一条信息
-            messageSession.setLastMessage("晚上吃啥？");
+            String lastMessage = messageMapper.getLastMessageBySessionId(sessionId);
+            // 没有查到消息【可能是新创建的会话】
+            if (lastMessage == null) {
+                // 设为空
+                messageSession.setLastMessage("");
+            } else {
+                messageSession.setLastMessage(lastMessage);
+            }
+            // messageSession.setLastMessage("晚上吃啥？");
             messageSessionList.add(messageSession);
         }
 

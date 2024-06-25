@@ -1,7 +1,7 @@
-package com.project.chat.controller;
+package com.example.java_chatroom.controller;
 
-import com.project.chat.mapper.UserMapper;
-import com.project.chat.model.User;
+import com.example.java_chatroom.mapper.UserMapper;
+import com.example.java_chatroom.model.User;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 

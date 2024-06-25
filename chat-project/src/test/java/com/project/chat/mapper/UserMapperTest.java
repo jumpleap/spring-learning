@@ -1,11 +1,10 @@
 package com.project.chat.mapper;
 
-import com.project.chat.model.User;
+import com.example.java_chatroom.mapper.UserMapper;
+import com.example.java_chatroom.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserMapperTest {
